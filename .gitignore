@@ -16,9 +16,9 @@ pids/
 *.pid.lock
 
 # Build output
-dist/
-build/
-client/build/
+# dist/
+# build/
+# client/build/
 
 # Environment variables
 /backend/.env
@@ -41,5 +41,5 @@ Thumbs.db
 *.sln
 
 # Uploaded files (if using multer or similar)
-/backend/uploads/
+# /backend/uploads/
 
