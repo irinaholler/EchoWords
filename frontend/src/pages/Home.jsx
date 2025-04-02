@@ -81,7 +81,7 @@ const HomePage = ({ darkMode }) => {
                             <button
                                 onClick={() => navigate("/create")}
                                 className={`inline-flex items-center px-8 py-3 border border-transparent 
-                                    text-base font-medium rounded-full text-white 
+                                    text-base font-medium rounded-xl text-white 
                                     ${darkMode
                                         ? "bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-600 hover:to-blue-500"
                                         : "bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600"

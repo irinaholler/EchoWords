@@ -6,6 +6,9 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import axios from 'axios';
 import { URL } from '../url';
 import logo from "../assets/logo.png";
+import { HiOutlineMenuAlt3 } from "react-icons/hi";
+import { IoClose } from "react-icons/io5";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = ({ darkMode, toggleDarkMode }) => {
     const { user, setUser } = useContext(UserContext);
@@ -114,20 +117,66 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                     )}
                 </div>
 
-                <div className="md:hidden">
-                    <button onClick={() => setIsOpen(!isOpen)} className="p-2">
-                        {isOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                </div>
+                {/* Burger Icon */}
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="text-gray-800 dark:text-purple-500 focus:outline-none md:hidden z-50 relative"
+                >
+                    {isOpen ? (
+                        <IoClose className="w-7 h-7 transition-transform duration-300 rotate-90" />
+                    ) : (
+                        <HiOutlineMenuAlt3 className="w-7 h-7 transition-transform duration-300" />
+                    )}
+                </button>
             </div>
 
-            {isOpen && (
-                <div className={`absolute top-16 right-0 w-40 ${darkMode ? "bg-gray-800" : "bg-white"} text-white p-3 rounded-md shadow-lg md:hidden`}>
-                    <Link to="/" className="block py-2" onClick={() => setIsOpen(false)}>Home</Link>
-                    <Link to="/about" className="block py-2" onClick={() => setIsOpen(false)}>About</Link>
-                    <Link to="/contact" className="block py-2" onClick={() => setIsOpen(false)}>Contact</Link>
-                </div>
-            )}
+            {/* Mobile Menu */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                        className={`absolute top-16 right-4 w-64 z-40 ${darkMode ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
+                            } p-4 rounded-xl shadow-xl md:hidden border ${darkMode ? "border-gray-700" : "border-gray-200"
+                            }`}
+                    >
+                        <div className="flex flex-col space-y-4">
+                            <Link
+                                to="/"
+                                className="hover:text-purple-500 transition-colors"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Home
+                            </Link>
+                            <Link
+                                to="/create"
+                                className="hover:text-purple-500 transition-colors"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Create Post
+                            </Link>
+                            <Link
+                                to={`/profile/${user?.username}`}
+                                className="hover:text-purple-500 transition-colors"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Profile
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    toggleDarkMode();
+                                    setIsOpen(false);
+                                }}
+                                className="mt-2 px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-md hover:from-purple-600 hover:to-purple-900 transition-all"
+                            >
+                                {darkMode ? "Light Mode" : "Dark Mode"}
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
