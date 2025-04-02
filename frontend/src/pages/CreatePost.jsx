@@ -63,7 +63,7 @@ const CreatePost = ({ darkMode }) => {
             formData.append("photo", file);
             formData.append("categories", JSON.stringify(cats));
 
-            const res = await axios.post(`${URL}/api/posts/create`, formData, {
+            const res = await axios.post(`/api/posts/create`, formData, {
                 withCredentials: true,
                 headers: { "Content-Type": "multipart/form-data" }
             });

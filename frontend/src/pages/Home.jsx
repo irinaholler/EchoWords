@@ -18,7 +18,7 @@ const HomePage = ({ darkMode }) => {
         const fetchPosts = async () => {
             try {
                 console.log("Fetching posts with search:", search);
-                const res = await axios.get(`${URL}/api/posts${search}`, {
+                const res = await axios.get(`/api/posts${search}`, {
                     withCredentials: true,
                 });
                 console.log("Posts response:", res.data);
@@ -138,7 +138,7 @@ const HomePage = ({ darkMode }) => {
                                     <div className="h-[350px] w-full overflow-hidden">
                                         {post.photo && (
                                             <img
-                                                src={`${URL}/uploads/posts/${post.photo}`}
+                                                src={`/uploads/posts/${post.photo}`}
                                                 alt={post.title}
                                                 className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
                                             />

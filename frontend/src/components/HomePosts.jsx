@@ -8,7 +8,7 @@ const HomePosts = ({ post, darkMode }) => {
     // Function to handle image URL
     const getImageUrl = (photo) => {
         if (!photo) return null;
-        return `${URL}/${photo.startsWith("uploads") ? photo : "uploads/" + photo}`;
+        return `/${photo.startsWith("uploads") ? photo : "uploads/" + photo}`;
     };
 
     // Ensure post has required data

@@ -18,7 +18,7 @@ const MyBlogs = () => {
 
         setLoader(true);
         try {
-            const res = await axios.get(`${URL}/api/posts/user/${user._id}`, {
+            const res = await axios.get(`/api/posts/user/${user._id}`, {
                 withCredentials: true
             });
 

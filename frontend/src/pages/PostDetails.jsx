@@ -35,7 +35,7 @@ const PostDetails = ({ darkMode }) => {
 
         try {
             console.log("Fetching post with slug:", slug);
-            const res = await axios.get(`${URL}/api/posts/slug/${slug}`, {
+            const res = await axios.get(`/api/posts/slug/${slug}`, {
                 withCredentials: true,
             });
 
@@ -44,7 +44,7 @@ const PostDetails = ({ darkMode }) => {
 
                 // Optionally fetch the author's current username
                 try {
-                    const userRes = await axios.get(`${URL}/api/users/${fetchedPost.userId}`, {
+                    const userRes = await axios.get(`/api/users/${fetchedPost.userId}`, {
                         withCredentials: true,
                     });
                     if (userRes.data?.success) {
@@ -62,7 +62,7 @@ const PostDetails = ({ darkMode }) => {
                         remove: /[*+~.()'"!:@]/g,
                     });
                     await axios.put(
-                        `${URL}/api/posts/${fetchedPost._id}`,
+                        `/api/posts/${fetchedPost._id}`,
                         { ...fetchedPost, slug: newSlug },
                         { withCredentials: true }
                     );
@@ -92,14 +92,14 @@ const PostDetails = ({ darkMode }) => {
     const fetchPostComments = async (postId) => {
         if (!postId) return;
         try {
-            const res = await axios.get(`${URL}/api/comments/post/${postId}`, {
+            const res = await axios.get(`/api/comments/post/${postId}`, {
                 withCredentials: true,
             });
             if (Array.isArray(res.data) && res.data.length > 0) {
                 const commentsWithUsernames = await Promise.all(
                     res.data.map(async (commentObj) => {
                         try {
-                            const userRes = await axios.get(`${URL}/api/users/${commentObj.userId}`, {
+                            const userRes = await axios.get(`/api/users/${commentObj.userId}`, {
                                 withCredentials: true,
                             });
                             if (userRes.data?.success) {
@@ -129,7 +129,7 @@ const PostDetails = ({ darkMode }) => {
             return;
         }
         try {
-            await axios.delete(`${URL}/api/posts/${post._id}`, {
+            await axios.delete(`/api/posts/${post._id}`, {
                 withCredentials: true,
             });
             navigate("/");
@@ -150,7 +150,7 @@ const PostDetails = ({ darkMode }) => {
 
         try {
             const response = await axios.post(
-                `${URL}/api/comments/create`,
+                `/api/comments/create`,
                 {
                     comment,
                     author: user.username,
@@ -172,7 +172,7 @@ const PostDetails = ({ darkMode }) => {
     // ---- Helper for Post Image ----
     const getImageUrl = (photo) => {
         if (!photo) return null;
-        return `${URL}/uploads/posts/${photo}`;
+        return `/uploads/posts/${photo}`;
     };
 
     // ---- useEffect to fetch post if slug changes ----

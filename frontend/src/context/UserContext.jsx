@@ -12,7 +12,7 @@ export function UserContextProvider({ children }) {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get(`${URL}/api/auth/refetch`, {
+                const res = await axios.get(`/api/auth/refetch`, {
                     withCredentials: true,
                 });
 
@@ -38,7 +38,7 @@ export function UserContextProvider({ children }) {
 
     const logout = async () => {
         try {
-            await axios.get(`${URL}/api/auth/logout`, { withCredentials: true });
+            await axios.get(`/api/auth/logout`, { withCredentials: true });
             setUser(null);
         } catch (err) {
             console.error("Logout failed:", err.response?.data || err.message);

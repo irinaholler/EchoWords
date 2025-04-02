@@ -12,7 +12,7 @@ const Comment = ({ c, darkMode }) => {
 
     const deleteComment = async (id) => {
         try {
-            await axios.delete(`${URL}/api/comments/${id}`, {
+            await axios.delete(`/api/comments/${id}`, {
                 withCredentials: true,
             });
             window.location.reload(true);
@@ -24,7 +24,7 @@ const Comment = ({ c, darkMode }) => {
     const updateComment = async () => {
         try {
             const res = await axios.put(
-                `${URL}/api/comments/${c._id}`,
+                `/api/comments/${c._id}`,
                 { comment: editedComment },
                 { withCredentials: true }
             );

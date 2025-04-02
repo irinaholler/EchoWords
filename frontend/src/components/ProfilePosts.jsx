@@ -10,7 +10,7 @@ const ProfilePosts = ({ p, darkMode }) => {
     // Function to handle image URL
     const getImageUrl = (photo) => {
         if (!photo) return null;
-        return `${URL}/uploads/posts/${photo}`;
+        return `/uploads/posts/${photo}`;
     };
 
     // Ensure post has required data

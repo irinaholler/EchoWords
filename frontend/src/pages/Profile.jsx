@@ -43,7 +43,7 @@ function Profile({ darkMode }) {
         setError(null);
         setPosts([]); // Reset posts when fetching new profile
         try {
-            const res = await axios.get(`${URL}/api/users/username/${param}`, {
+            const res = await axios.get(`/api/users/username/${param}`, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             });
@@ -87,7 +87,7 @@ function Profile({ darkMode }) {
 
         try {
             console.log("Fetching posts for user:", uid);
-            const res = await axios.get(`${URL}/api/posts/user/${uid}`, {
+            const res = await axios.get(`/api/posts/user/${uid}`, {
                 withCredentials: true,
             });
 
@@ -127,7 +127,7 @@ function Profile({ darkMode }) {
 
             // Step A: Update user’s own data
             const res = await axios.patch(
-                `${URL}/api/users/${user._id}`,
+                `/api/users/${user._id}`,
                 updateData,
                 { withCredentials: true }
             );
@@ -136,7 +136,7 @@ function Profile({ darkMode }) {
                 // Step B: After user is updated, also update all existing posts:
                 try {
                     await axios.patch(
-                        `${URL}/api/posts/updateUsername/${user._id}`,
+                        `/api/posts/updateUsername/${user._id}`,
                         { newUsername: lowercaseUsername },
                         { withCredentials: true }
                     );
@@ -160,7 +160,7 @@ function Profile({ darkMode }) {
 
     const handleUserDelete = async () => {
         try {
-            await axios.delete(`${URL}/api/users/${user._id}`, { withCredentials: true });
+            await axios.delete(`/api/users/${user._id}`, { withCredentials: true });
             setUser(null);
             navigate("/");
         } catch (err) {
@@ -177,7 +177,7 @@ function Profile({ darkMode }) {
             const formData = new FormData();
             formData.append("photo", file);
             const res = await axios.patch(
-                `${URL}/api/users/${user._id}/profile-picture`,
+                `/api/users/${user._id}/profile-picture`,
                 formData,
                 {
                     withCredentials: true,
@@ -232,7 +232,7 @@ function Profile({ darkMode }) {
         if (!profilePic) {
             return `https://api.dicebear.com/7.x/initials/svg?seed=${username}&backgroundColor=purple`;
         }
-        return `${URL}/uploads/profiles/${profilePic.split('/').pop()}`;
+        return `/uploads/profiles/${profilePic.split('/').pop()}`;
     };
 
     const imageSrc = getProfileImageUrl(profilePic);
