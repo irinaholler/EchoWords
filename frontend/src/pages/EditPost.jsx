@@ -1,11 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import { ImCross } from 'react-icons/im';
 import axios from "axios";
-import { URL as BASE_URL } from "../url";
 import { useNavigate, useParams } from "react-router-dom";
+import { URL as BASE_URL } from "../url";
 import { UserContext } from "../context/UserContext";
+import { ThemeContext } from '../context/ThemeContext';
 
-const EditPost = ({ darkMode }) => {
+
+const EditPost = () => {
+    const { darkMode } = useContext(ThemeContext);
     const postId = useParams().id;
     const { user } = useContext(UserContext);
     const navigate = useNavigate();

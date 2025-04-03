@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Instagram } from "lucide-react"; // Only using Facebook and Instagram icons
+import { Facebook, Instagram } from "lucide-react";
+
 
 const Footer = () => {
     return (

@@ -11,8 +11,7 @@ const Menures = () => {
 
     const handleLogout = async () => {
         try {
-            const res = await axios.get(URL + "/api/auth/logout", { withCredentials: true })
-            // console.log(res)
+            const res = await axios.get(`/api/auth/logout`, { withCredentials: true })
             setUser(null)
             navigate("/login")
         }

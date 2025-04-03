@@ -104,7 +104,7 @@ const PostDetails = () => {
                 const commentsWithUsernames = await Promise.all(
                     res.data.map(async (commentObj) => {
                         try {
-                            const userRes = await axios.get(`/api/users/${commentObj.userId}`, {
+                            const userRes = await axios.get(`$/api/users/${commentObj.userId}`, {
                                 withCredentials: true,
                             });
                             if (userRes.data?.success) {

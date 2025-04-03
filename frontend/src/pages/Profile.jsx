@@ -11,9 +11,7 @@ import { ThemeContext } from '../context/ThemeContext';
 
 
 function Profile() {
-    // -----------------------------------
     // Hooks
-    // -----------------------------------
     const { user, setUser, loading } = useContext(UserContext);
     const navigate = useNavigate();
     const { darkMode } = useContext(ThemeContext);
@@ -42,6 +40,7 @@ function Profile() {
         setProfileLoading(true);
         setError(null);
         setPosts([]); // Reset posts when fetching new profile
+
         try {
             const res = await axios.get(`/api/users/username/${param}`, {
                 withCredentials: true,
@@ -118,6 +117,7 @@ function Profile() {
     const handleUserUpdate = async () => {
         setUpdated(false);
         setUpdateError("");
+
         try {
             const lowercaseUsername = username.toLowerCase();
             const updateData = { username: lowercaseUsername, email };
@@ -127,7 +127,7 @@ function Profile() {
 
             // Step A: Update user’s own data
             const res = await axios.patch(
-                `$/api/users/${user._id}`,
+                `/api/users/${user._id}`,
                 updateData,
                 { withCredentials: true }
             );
@@ -148,6 +148,11 @@ function Profile() {
                 // Step C: Locally reflect that the user changed username
                 setUpdated(true);
                 setUser({ ...user, username: lowercaseUsername });
+                setUsername(lowercaseUsername);
+
+                setTimeout(() => {
+                    navigate(`/profile/${lowercaseUsername}`);
+                }, 100);
             } else {
                 setUpdateError(res.data.message || "Update failed");
             }
@@ -171,8 +176,10 @@ function Profile() {
     const handlePhotoUpload = async (e) => {
         if (!user?._id) return;
         const file = e.target.files?.[0];
+
         if (!file) return;
         setUploading(true);
+
         try {
             const formData = new FormData();
             formData.append("photo", file);

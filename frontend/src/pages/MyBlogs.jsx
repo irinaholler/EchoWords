@@ -1,27 +1,28 @@
 import { Link, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
 import { URL } from "../url";
 import HomePosts from "../components/HomePosts";
 import Loader from "../components/Loader";
+import { ThemeContext } from '../context/ThemeContext';
+
 
 const MyBlogs = () => {
+    const { darkMode } = useContext(ThemeContext);
     const { search } = useLocation();
     const [posts, setPosts] = useState([]);
     const [noResults, setNoResults] = useState(false);
     const [loader, setLoader] = useState(false);
     const { user } = useContext(UserContext);
 
-    const fetchPosts = async () => {
+    const fetchPosts = useCallback(async () => {
         if (!user?._id) return;
-
         setLoader(true);
         try {
             const res = await axios.get(`/api/posts/user/${user._id}`, {
-                withCredentials: true
+                withCredentials: true,
             });
-
             setPosts(res.data.data);
             setNoResults(res.data.data.length === 0);
         } catch (err) {
@@ -29,11 +30,11 @@ const MyBlogs = () => {
         } finally {
             setLoader(false);
         }
-    };
+    }, [user?._id]);
 
     useEffect(() => {
         fetchPosts();
-    }, [search, user?._id]);
+    }, [fetchPosts]);
 
     return (
         <div className="px-8 md:px-[200px] min-h-[80vh]">

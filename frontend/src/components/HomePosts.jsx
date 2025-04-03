@@ -1,33 +1,34 @@
-/* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { URL } from '../url';
+import { ThemeContext } from '../context/ThemeContext';
 
-const HomePosts = ({ post, darkMode }) => {
+const HomePosts = ({ post }) => {
+    const { darkMode } = useContext(ThemeContext);
     const [imageError, setImageError] = useState(false);
 
-    // Function to handle image URL
     const getImageUrl = (photo) => {
         if (!photo) return null;
         return `/${photo.startsWith("uploads") ? photo : "uploads/" + photo}`;
     };
 
-    // Ensure post has required data
     if (!post || !post.slug) {
         console.error("Invalid post data:", post);
         return null;
     }
 
     return (
-        <div className="flex flex-col h-full justify-between">
+        <div
+            className={`flex flex-col h-full justify-between rounded-xl p-6 mb-6 transition-all duration-300 shadow-md border
+            ${darkMode
+                    ? "bg-gray-900 text-gray-100 border-gray-700"
+                    : "bg-white text-gray-800 border-gray-200"}`}
+        >
             <div className="flex flex-col gap-5">
-                <h2 className={`text-2xl font-bold line-clamp-2 ${darkMode ? "text-gray-100" : "text-gray-800"
-                    }`}>
+                <h2 className="text-2xl font-bold line-clamp-2">
                     {post.title}
                 </h2>
 
-                {/* Description Preview */}
-                <p className={`text-base line-clamp-3 ${darkMode ? "text-gray-300" : "text-gray-600"
-                    }`}>
+                <p className="text-base line-clamp-3">
                     {post.description}
                 </p>
 
@@ -37,10 +38,10 @@ const HomePosts = ({ post, darkMode }) => {
                         {post.categories.map((category, index) => (
                             <span
                                 key={index}
-                                className={`text-base px-3 py-1 rounded-full ${darkMode
-                                    ? "bg-purple-900 text-purple-200"
-                                    : "bg-purple-100 text-purple-600"
-                                    }`}
+                                className={`text-sm px-3 py-1 rounded-full font-medium
+                                ${darkMode
+                                        ? "bg-purple-900 text-purple-200"
+                                        : "bg-purple-100 text-purple-600"}`}
                             >
                                 #{category}
                             </span>
@@ -49,9 +50,8 @@ const HomePosts = ({ post, darkMode }) => {
                 )}
             </div>
 
-            {/* Author and Date - Moved to bottom */}
-            <div className={`flex items-center gap-2 text-base mt-4 ${darkMode ? "text-gray-400" : "text-gray-500"
-                }`}>
+            {/* Author and Date */}
+            <div className={`flex items-center gap-2 text-sm mt-6 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
                 <span className="font-medium">By {post.username}</span>
                 <span>•</span>
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
