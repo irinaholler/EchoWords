@@ -9,12 +9,14 @@ import { UserContext } from "../context/UserContext";
 import Comment from "../components/Comment";
 import Loader from "../components/Loader";
 import { URL } from "../url";
+import { ThemeContext } from '../context/ThemeContext';
 
-const PostDetails = ({ darkMode }) => {
+
+const PostDetails = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
     const { user, loading: userLoading } = useContext(UserContext);
-
+    const { darkMode } = useContext(ThemeContext);
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState("");
@@ -66,6 +68,9 @@ const PostDetails = ({ darkMode }) => {
                         { ...fetchedPost, slug: newSlug },
                         { withCredentials: true }
                     );
+
+                    navigate(`/post/${newSlug}`); // optional redirection
+
                     fetchedPost.slug = newSlug;
                 }
 

@@ -1,22 +1,25 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
-import { UserContext } from '../context/UserContext';
-import { FiSearch } from 'react-icons/fi';
-import { Moon, Sun, Menu, X } from "lucide-react";
-import axios from 'axios';
-import { URL } from '../url';
-import logo from "../assets/logo.png";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
+import { Moon, Sun } from "lucide-react";
+import axios from 'axios';
 
-const Navbar = ({ darkMode, toggleDarkMode }) => {
+import { UserContext } from '../context/UserContext';
+import { FiSearch } from 'react-icons/fi';
+import { URL } from '../url';
+import logo from "../assets/logo.png";
+import { ThemeContext } from '../context/ThemeContext';
+
+
+const Navbar = () => {
     const { user, setUser } = useContext(UserContext);
+    const { darkMode, toggleDarkMode } = useContext(ThemeContext);
     const [searchQuery, setSearchQuery] = useState("");
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-
 
     const handleLogout = async () => {
         try {

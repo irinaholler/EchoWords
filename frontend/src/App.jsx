@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useContext } from "react";
+import { ThemeContext } from "./context/ThemeContext";
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -16,39 +19,23 @@ import "./index.css";
 
 function App() {
 
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("dark", darkMode);
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("dark", darkMode);
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
+  const { darkMode, toggleDarkMode } = useContext(ThemeContext);
 
   return (
     <div className={`min-h-screen ${darkMode ? "dark:bg-gray-800" : "bg-gray-100"} flex flex-col`}>
-      <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <Navbar />
 
       <Routes>
-        <Route path="/" element={<Home darkMode={darkMode} />} />
+        <Route path="/" element={<Home />} />
         <Route path="/welcome" element={<Welcome />} />
-        <Route path="/create" element={<CreatePost darkMode={darkMode} />} />
-        <Route path="/post/:slug" element={<PostDetails darkMode={darkMode} />} />
-        <Route path="/edit/:id" element={<EditPost darkMode={darkMode} />} />
-        <Route path="/profile/:username" element={<Profile darkMode={darkMode} />} />
-        <Route path="/about" element={<About darkMode={darkMode} />} />
-        <Route path="/contact" element={<Contact darkMode={darkMode} />} />
-        <Route path="/login" element={<Login darkMode={darkMode} />} />
-        <Route path="/register" element={<Register darkMode={darkMode} />} />
+        <Route path="/create" element={<CreatePost />} />
+        <Route path="/post/:slug" element={<PostDetails />} />
+        <Route path="/edit/:id" element={<EditPost />} />
+        <Route path="/profile/:username" element={<Profile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 

@@ -1,13 +1,17 @@
 import { ImCross } from 'react-icons/im';
 import { useContext, useState } from 'react';
-import { UserContext } from '../context/UserContext';
-import { URL } from '../url';
 import axios from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Upload, Plus } from 'lucide-react';
 
-const CreatePost = ({ darkMode }) => {
+import { UserContext } from '../context/UserContext';
+import { URL } from '../url';
+import { ThemeContext } from '../context/ThemeContext';
+
+
+const CreatePost = () => {
+    const { darkMode } = useContext(ThemeContext);
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
     const [file, setFile] = useState(null);

@@ -7,16 +7,18 @@ import { FaCamera } from "react-icons/fa";
 import ProfilePosts from "../components/ProfilePosts";
 import { URL } from "../url";
 import { UserContext } from "../context/UserContext";
+import { ThemeContext } from '../context/ThemeContext';
 
-function Profile({ darkMode }) {
+
+function Profile() {
     // -----------------------------------
-    // 1) Put all Hooks at the top
+    // Hooks
     // -----------------------------------
     const { user, setUser, loading } = useContext(UserContext);
     const navigate = useNavigate();
+    const { darkMode } = useContext(ThemeContext);
     const { username: param } = useParams();
-
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState(param || "");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [profilePic, setProfilePic] = useState(null);
@@ -28,13 +30,11 @@ function Profile({ darkMode }) {
     const [profileLoading, setProfileLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // If you have any effect:
     useEffect(() => {
-        if (param) {
+        if (param && user) {
             fetchProfile();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [param]);
+    }, [param, user]);
 
     // All your other helper functions:
 
@@ -127,7 +127,7 @@ function Profile({ darkMode }) {
 
             // Step A: Update user’s own data
             const res = await axios.patch(
-                `/api/users/${user._id}`,
+                `$/api/users/${user._id}`,
                 updateData,
                 { withCredentials: true }
             );
@@ -197,7 +197,7 @@ function Profile({ darkMode }) {
     };
 
     // -----------------------------------
-    // 2) Then do a single set of checks
+    // Set of checks
     // -----------------------------------
     if (loading || profileLoading) {
         return <div className="pt-24 text-center">Loading...</div>;
@@ -226,11 +226,11 @@ function Profile({ darkMode }) {
     }
 
     // -----------------------------------
-    // 3) Finally, return the main UI
+    // Return the main UI
     // -----------------------------------
     const getProfileImageUrl = (profilePic) => {
         if (!profilePic) {
-            return `https://api.dicebear.com/7.x/initials/svg?seed=${username}&backgroundColor=purple`;
+            return `https://robohash.org/${username}?set=set3&bgset=bg2&size=200x200`;
         }
         return `/uploads/profiles/${profilePic.split('/').pop()}`;
     };
@@ -257,7 +257,7 @@ function Profile({ darkMode }) {
                         >
                             <div className="text-center mb-10 relative">
                                 <div className="relative w-40 h-40 mx-auto mb-8">
-                                    <div className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-xl opacity-30 animate-pulse`}></div>
+                                    <div className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-800 rounded-full blur-xl opacity-30 animate-pulse`}></div>
                                     <div
                                         className={`w-full h-full rounded-full overflow-hidden border-4 ${darkMode ? "border-purple-600" : "border-purple-500"
                                             } relative group shadow-lg`}
@@ -329,7 +329,7 @@ function Profile({ darkMode }) {
                                     <div className="flex gap-4 pt-4">
                                         <button
                                             onClick={handleUserUpdate}
-                                            className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-lg hover:shadow-xl"
+                                            className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-xl hover:from-purple-600 hover:to-purple-800 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-lg hover:shadow-xl"
                                         >
                                             Update Profile
                                         </button>

@@ -3,14 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { URL } from "../url";
 import { UserContext } from "../context/UserContext";
-import backgroundImage from "../assets/deep-web.jpg";
+import { ThemeContext } from "../context/ThemeContext";
+import { motion } from "framer-motion";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+
     const { setUser } = useContext(UserContext);
+    const { darkMode } = useContext(ThemeContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
@@ -26,7 +29,6 @@ export default function LoginPage() {
             );
 
             if (response.data.success) {
-                // Set the user data from the response
                 setUser(response.data.data);
                 navigate("/");
             } else {
@@ -34,7 +36,9 @@ export default function LoginPage() {
             }
         } catch (error) {
             console.error("Login error:", error);
-            setError(error.response?.data?.message || "Invalid email or password. Please try again.");
+            setError(
+                error.response?.data?.message || "Invalid email or password. Please try again."
+            );
         } finally {
             setLoading(false);
         }
@@ -42,54 +46,82 @@ export default function LoginPage() {
 
     return (
         <div
-            className="flex items-center justify-center min-h-screen w-full bg-gray-100"
-            style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className={`min-h-screen flex items-center justify-center px-4 py-10 ${darkMode
+                ? "bg-gradient-to-br from-gray-900 to-gray-800 text-white"
+                : "bg-gradient-to-br from-purple-50 via-white to-blue-50 text-gray-900"
+                }`}
         >
-            <div className="bg-gray-900 p-10 rounded-lg shadow-md w-80">
-                <h2 className="text-2xl mb-4 text-center text-gray-100">Login</h2>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className={`w-full max-w-md p-8 rounded-2xl shadow-2xl ${darkMode ? "bg-gray-800 border border-gray-700" : "bg-white"
+                    }`}
+            >
+                <h2 className="text-3xl font-extrabold text-center mb-6">Welcome Back</h2>
 
                 {error && (
-                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                        <p className="text-red-500 text-center text-sm">{error}</p>
+                    <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg text-sm text-red-600">
+                        {error}
                     </div>
                 )}
 
-                <form className="flex flex-col" onSubmit={handleSubmit}>
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        className="p-2 mb-4 border border-gray-100 rounded-md text-base outline-none placeholder-gray-400 text-gray-300 bg-gray-800"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={loading}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="p-2 mb-4 border border-gray-100 rounded-md text-base outline-none placeholder-gray-400 text-gray-300 bg-gray-800"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        disabled={loading}
-                    />
-                    <div className="text-center mt-4 mb-2 text-sm text-blue-500">
-                        Not yet registered?
-                        <Link to="/register" className="text-blue-600 pl-1 underline">Register here</Link>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                        <label className="block mb-1 text-sm font-medium">Email</label>
+                        <input
+                            type="email"
+                            placeholder="you@example.com"
+                            className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${darkMode
+                                ? "bg-gray-700 border-gray-600 text-white"
+                                : "bg-gray-50 border-gray-300"
+                                }`}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            disabled={loading}
+                        />
                     </div>
+
+                    <div>
+                        <label className="block mb-1 text-sm font-medium">Password</label>
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${darkMode
+                                ? "bg-gray-700 border-gray-600 text-white"
+                                : "bg-gray-50 border-gray-300"
+                                }`}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out ${loading
-                            ? "opacity-50 cursor-not-allowed"
-                            : "hover:scale-105 hover:shadow-xl"
+                        className={`w-full py-3 font-semibold rounded-lg text-white transition-all duration-300 ${loading
+                            ? "bg-purple-400 cursor-not-allowed"
+                            : "bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 hover:scale-[1.02]"
                             }`}
                     >
                         {loading ? "Logging in..." : "Login"}
                     </button>
                 </form>
-                <div className="text-center mt-6 text-sm text-blue-500 cursor-pointer">Forgot Password?</div>
-            </div>
+
+                <div className="text-center mt-6 text-sm">
+                    Don’t have an account?
+                    <Link to="/register" className="text-purple-600 font-semibold pl-1 hover:underline">
+                        Register
+                    </Link>
+                </div>
+
+                <div className="text-center mt-4 text-sm text-blue-500 cursor-pointer hover:underline">
+                    Forgot Password?
+                </div>
+            </motion.div>
         </div>
     );
 }

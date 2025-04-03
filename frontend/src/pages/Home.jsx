@@ -2,12 +2,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
+
 import { URL } from "../url";
 import Loader from "../components/Loader";
 import { UserContext } from "../context/UserContext";
+import { ThemeContext } from '../context/ThemeContext';
 
-const HomePage = ({ darkMode }) => {
+
+const HomePage = () => {
     const [posts, setPosts] = useState([]);
+    const { darkMode } = useContext(ThemeContext);
     const [loader, setLoader] = useState(true);
     const [error, setError] = useState("");
     const { user } = useContext(UserContext);
