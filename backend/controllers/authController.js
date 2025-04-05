@@ -6,10 +6,15 @@ import UserModel from "../models/userModel.js";
 // SIGNUP
 export const signup = async (req, res, next) => {
     try {
+        // Validation
         const { username, email, password } = req.body;
-
         if (!username || !email || !password) {
             throw createError(400, "All fields are required.");
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: "Invalid email format" });
         }
 
         // Check if the email is already registered
@@ -18,19 +23,20 @@ export const signup = async (req, res, next) => {
             throw createError(409, "Email already in use.");
         }
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 12);
+        if (password.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters" });
+        }
 
         // Store the new user
         const user = await UserModel.create({
             username,
             email,
-            password: hashedPassword,
+            password,
         });
 
         res.status(201).json({
             success: true,
-            message: "User created successfully.",
+            message: "Login successful",
             data: { username: user.username, email: user.email }
         });
     } catch (error) {
@@ -54,7 +60,7 @@ export const login = async (req, res, next) => {
         }
 
         // Compare passwords
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await user.isPasswordCorrect(password, user.password);
         if (!isMatch) {
             throw createError(401, "Invalid credentials.");
         }
@@ -68,8 +74,8 @@ export const login = async (req, res, next) => {
 
         // Store the token in a cookie with name "token"
         res.cookie("token", token, {
-            maxAge: 3 * 24 * 60 * 60 * 1000,
             httpOnly: true,
+            maxAge: 3 * 24 * 60 * 60 * 1000,
         });
 
         res.status(200).json({
@@ -125,8 +131,10 @@ export const refetch = async (req, res, next) => {
 
 export const google = async (req, res, next) => {
     const { email, name, googlePhotoUrl } = req.body;
+
     try {
-        const user = await User.findOne({ email });
+        const user = await UserModel.findOne({ email });
+
         if (user) {
             const token = jwt.sign(
                 { id: user._id, isAdmin: user.isAdmin },

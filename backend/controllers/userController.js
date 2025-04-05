@@ -13,42 +13,52 @@ export const test = (req, res) => {
 export const updateUser = async (req, res, next) => {
     try {
         const userId = req.params.id;
+        const user = await UserModel.findById(userId);
 
-        if (req.user.id !== userId) {
-            return next(createError(403, "You are not allowed to update this user"));
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
         }
+        //if (req.user.id !== userId) {
+        //    return next(createError(403, "You are not allowed to update this user"));
+        //}
+        const { username, email, password } = req.body;
 
-        if (req.body.password) {
-            if (req.body.password.length < 6) {
-                return next(createError(400, "Password must be at least 6 characters"));
-            }
-            req.body.password = await bcrypt.hash(req.body.password, 12);
-        }
-
-        if (req.body.username) {
-            if (req.body.username.length < 3 || req.body.username.length > 20) {
+        // --- Validate username ---
+        if (username) {
+            if (username.length < 3 || username.length > 20) {
                 return next(createError(400, "Username must be between 3 and 20 characters"));
             }
-            if (req.body.username.includes(" ")) {
+            if (username.includes(" ")) {
                 return next(createError(400, "Username cannot contain spaces"));
             }
-            if (req.body.username !== req.body.username.toLowerCase()) {
+            if (username !== username.toLowerCase()) {
                 return next(createError(400, "Username must be lowercase. Please enter your username in all lowercase letters."));
             }
+            user.username = username;
         }
 
-        const updatedUser = await UserModel.findByIdAndUpdate(
-            userId,
-            req.body,
-            { new: true, runValidators: true }
-        );
+        // --- Validate and set email ---
+        if (email) {
+            user.email = email;
+        }
+
+        // --- Validate and set password ---
+        if (password) {
+            if (password.length < 4) {
+                return next(createError(400, "Password must be at least 6 characters"));
+            }
+            user.password = password; // This will be hashed by `pre("save")`
+        }
+
+        // --- Save updated user ---
+        const updatedUser = await user.save();
 
         if (!updatedUser) {
             return next(createError(404, "User NOT Found!"));
         }
 
         // Update all posts for this user with the new username.
-        if (req.body.username) {
+        if (username) {
             await Post.updateMany(
                 { userId: userId },
                 { $set: { username: req.body.username } }
@@ -102,7 +112,7 @@ export const getUser = async (req, res, next) => {
 export const getUserByUsername = async (req, res, next) => {
     try {
         const username = req.params.username.toLowerCase();
-        const user = await UserModel.findOne({ username });
+        const user = await UserModel.findOne({ username: new RegExp(`^${username}$`, 'i') });
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
         const { password, ...info } = user._doc;
@@ -156,26 +166,5 @@ export const updateProfilePicture = async (req, res, next) => {
         });
     } catch (error) {
         next(error);
-    }
-};
-
-// REFETCH USER (from token)
-export const refetch = async (req, res, next) => {
-    try {
-        const token = req.cookies.token || req.cookies.jwtToken;
-        if (!token) {
-            return res.status(401).json({ success: false, message: "No token provided." });
-        }
-
-        const data = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await UserModel.findById(data.userId).select("-password");
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found." });
-        }
-
-        res.status(200).json({ success: true, data: user });
-    } catch (err) {
-        return res.status(401).json({ success: false, message: "Invalid or expired token." });
     }
 };

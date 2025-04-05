@@ -1,7 +1,9 @@
 import express from "express";
 
-import { signup, login, logout, refetch } from "../controllers/authController.js";
+import { signup, login, logout, refetch, google } from "../controllers/authController.js";
 import UserModel from "../models/userModel.js";
+import { checkToken } from "../middleware/checkToken.js";
+
 
 const authRouter = express.Router();
 
@@ -23,6 +25,7 @@ authRouter.get("/", async (req, res, next) => {
 authRouter.post("/register", signup);
 authRouter.post("/login", login);
 authRouter.get("/logout", logout);
-authRouter.get("/refetch", refetch);
+authRouter.get("/refetch", checkToken, refetch);
+authRouter.post("/google", google);
 
 export default authRouter;
