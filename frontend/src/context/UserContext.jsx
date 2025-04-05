@@ -8,21 +8,19 @@ export function UserContextProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Fetch user from /api/auth/refetch only once on mount
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const res = await axios.get(`/api/auth/refetch`, {
                     withCredentials: true,
                 });
-
-                if (res.data?.success) {
+                if (res.data.success) {
                     setUser(res.data.data);
                 } else {
                     setUser(null);
                 }
             } catch (err) {
-                console.error("Error fetching user:", err.response?.data || err);
+                console.log("Error fetching user:", err.response?.data?.message || err.message);
                 setUser(null);
             } finally {
                 setLoading(false);

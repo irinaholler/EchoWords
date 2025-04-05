@@ -19,6 +19,7 @@ function Profile() {
     const [username, setUsername] = useState(param || "");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [profilePic, setProfilePic] = useState(null);
     const [posts, setPosts] = useState([]);
     const [uploading, setUploading] = useState(false);
@@ -33,6 +34,26 @@ function Profile() {
             fetchProfile();
         }
     }, [param, user]);
+
+    // UserContext.jsx
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await axios.get(`/api/auth/refetch`, {
+                    withCredentials: true,
+                });
+                if (res.data.success) {
+                    setUser(res.data.data);
+                }
+            } catch (err) {
+                console.log("Error fetching user:", err.response?.data?.message || err.message);
+                setUser(null);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     // All your other helper functions:
 
@@ -66,6 +87,7 @@ function Profile() {
             }
         } catch (err) {
             console.error("Fetch profile error:", err);
+
             if (err.response?.status === 404) {
                 setError("Profile not found");
             } else if (err.response?.status === 401) {
@@ -117,6 +139,11 @@ function Profile() {
     const handleUserUpdate = async () => {
         setUpdated(false);
         setUpdateError("");
+
+        if (password && password !== confirmPassword) {
+            setUpdateError("Passwords do not match");
+            return;
+        }
 
         try {
             const lowercaseUsername = username.toLowerCase();
@@ -203,9 +230,7 @@ function Profile() {
         }
     };
 
-    // -----------------------------------
     // Set of checks
-    // -----------------------------------
     if (loading || profileLoading) {
         return <div className="pt-24 text-center">Loading...</div>;
     }
@@ -232,9 +257,6 @@ function Profile() {
         );
     }
 
-    // -----------------------------------
-    // Return the main UI
-    // -----------------------------------
     const getProfileImageUrl = (profilePic) => {
         if (!profilePic) {
             return `https://robohash.org/${username}?set=set3&bgset=bg2&size=200x200`;
@@ -331,6 +353,35 @@ function Profile() {
                                             onChange={(e) => setEmail(e.target.value)}
                                             className={`w-full px-4 py-3 rounded-xl border ${darkMode ? "bg-gray-700/50 border-gray-600 text-white" : "bg-gray-50/50 border-gray-200"
                                                 } focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all backdrop-blur-sm`}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+                                            New Password
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className={`w-full px-4 py-3 rounded-xl border ${darkMode
+                                                ? "bg-gray-700/50 border-gray-600 text-white"
+                                                : "bg-gray-50/50 border-gray-200"} 
+        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all backdrop-blur-sm`}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+                                            Confirm Password
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            className={`w-full px-4 py-3 rounded-xl border ${darkMode
+                                                ? "bg-gray-700/50 border-gray-600 text-white"
+                                                : "bg-gray-50/50 border-gray-200"} 
+        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all backdrop-blur-sm`}
                                         />
                                     </div>
                                     <div className="flex gap-4 pt-4">

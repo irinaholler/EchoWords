@@ -11,7 +11,7 @@ import { ThemeContext } from '../context/ThemeContext';
 
 const CreatePost = () => {
     const { darkMode } = useContext(ThemeContext);
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     const [title, setTitle] = useState("");
@@ -22,7 +22,35 @@ const CreatePost = () => {
     const [cats, setCats] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+    // Check authentication status
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                if (!user) {
+                    const res = await axios.get(`/api/auth/refetch`, { withCredentials: true });
+                    if (res.data?.success) {
+                        setUser(res.data.data);
+                        setIsAuthenticated(true);
+                    } else {
+                        setIsAuthenticated(false);
+                        navigate('/login');
+                    }
+                } else {
+                    setIsAuthenticated(true);
+                }
+            } catch (err) {
+                console.error("Error checking authentication:", err);
+                setIsAuthenticated(false);
+                navigate('/login');
+            }
+        };
+
+        checkAuth();
+    }, [user, setUser, navigate]);
+
+    // Handle file preview using FileReader
     useEffect(() => {
         if (!file) {
             setPreviewUrl(null);
@@ -39,16 +67,19 @@ const CreatePost = () => {
         return () => reader.abort();
     }, [file]);
 
-    if (!user || !user._id) {
-        setError("User not authenticated. Please log in again.");
-        setLoading(false);
-        return <Navigate to="/login" />;
+    // If not authenticated, show loading or redirect
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+            </div>
+        );
     }
 
-    const deleteCategory = (index) => {
-        const updated = [...cats];
-        updated.splice(index, 1);
-        setCats(updated);
+    const deleteCategory = (i) => {
+        const updatedCats = [...cats];
+        updatedCats.splice(i, 1);
+        setCats(updatedCats);
     };
 
     const addCategory = () => {
@@ -80,7 +111,7 @@ const CreatePost = () => {
 
             const res = await axios.post(`/api/posts/create`, formData, {
                 withCredentials: true,
-                headers: { "Content-Type": "multipart/form-data" }
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
             if (res.data?.success && res.data?.data?.slug) {

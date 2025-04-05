@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { ImCross } from 'react-icons/im';
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { URL as BASE_URL } from "../url";
+import { URL } from "../url";
 import { UserContext } from "../context/UserContext";
 import { ThemeContext } from '../context/ThemeContext';
 
@@ -28,7 +28,7 @@ const EditPost = () => {
 
     const fetchPost = async () => {
         try {
-            const res = await axios.get(`${BASE_URL}/api/posts/${postId}`, { withCredentials: true });
+            const res = await axios.get(`/api/posts/${postId}`, { withCredentials: true });
             const post = res.data.data;
             setTitle(post.title);
             setDesc(post.description);
@@ -41,19 +41,21 @@ const EditPost = () => {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+        if (loading) return; // <- prevent multiple clicks
         setLoading(true);
+
         let imageUrl = previousPhoto;
 
         if (file) {
             const formData = new FormData();
             formData.append("photo", file);
-            const uploadRes = await axios.patch(`${BASE_URL}/api/posts/${postId}/profile-picture`, formData, { withCredentials: true });
+            const uploadRes = await axios.patch(`/api/posts/${postId}/profile-picture`, formData, { withCredentials: true });
             if (uploadRes.data.success) imageUrl = uploadRes.data.data.photo;
         }
 
         try {
             const postData = { title, description: desc, username: user.username, userId: user._id, categories: cats, photo: imageUrl };
-            const res = await axios.put(`${BASE_URL}/api/posts/${postId}`, postData, { withCredentials: true });
+            const res = await axios.put(`/api/posts/${postId}`, postData, { withCredentials: true });
             if (res.data.success) navigate(`/post/${res.data.data.slug}`);
         } catch (err) {
             setError("Error updating post");
@@ -103,7 +105,7 @@ const EditPost = () => {
                             <div className="flex items-center gap-4">
                                 {(previousPhoto || file) && (
                                     <img
-                                        src={file ? window.URL.createObjectURL(file) : `${BASE_URL}/uploads/posts/${previousPhoto}`}
+                                        src={file ? window.URL.createObjectURL(file) : `/uploads/posts/${previousPhoto}`}
                                         alt="Preview"
                                         className="w-36 h-36 object-cover rounded-lg shadow-md"
                                     />

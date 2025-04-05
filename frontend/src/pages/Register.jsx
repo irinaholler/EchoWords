@@ -22,7 +22,7 @@ export default function Register() {
         setLoading(true);
 
         try {
-            await axios.post(URL + "/api/auth/register", { username, email, password });
+            await axios.post(`/api/auth/register`, { username, email, password });
 
             // Clear form and redirect
             setUsername("");
@@ -40,8 +40,8 @@ export default function Register() {
     return (
         <div
             className={`min-h-screen flex items-center justify-center px-4 py-10 ${darkMode
-                    ? "bg-gradient-to-br from-gray-900 to-gray-800 text-white"
-                    : "bg-gradient-to-br from-purple-50 via-white to-blue-50 text-gray-900"
+                ? "bg-gradient-to-br from-gray-900 to-gray-800 text-white"
+                : "bg-gradient-to-br from-purple-50 via-white to-blue-50 text-gray-900"
                 }`}
         >
             <motion.div
@@ -66,8 +66,8 @@ export default function Register() {
                             type="text"
                             placeholder="yourname"
                             className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${darkMode
-                                    ? "bg-gray-700 border-gray-600 text-white"
-                                    : "bg-gray-50 border-gray-300"
+                                ? "bg-gray-700 border-gray-600 text-white"
+                                : "bg-gray-50 border-gray-300"
                                 }`}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -81,8 +81,8 @@ export default function Register() {
                             type="email"
                             placeholder="you@example.com"
                             className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${darkMode
-                                    ? "bg-gray-700 border-gray-600 text-white"
-                                    : "bg-gray-50 border-gray-300"
+                                ? "bg-gray-700 border-gray-600 text-white"
+                                : "bg-gray-50 border-gray-300"
                                 }`}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -96,8 +96,8 @@ export default function Register() {
                             type="password"
                             placeholder="••••••••"
                             className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${darkMode
-                                    ? "bg-gray-700 border-gray-600 text-white"
-                                    : "bg-gray-50 border-gray-300"
+                                ? "bg-gray-700 border-gray-600 text-white"
+                                : "bg-gray-50 border-gray-300"
                                 }`}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -109,8 +109,8 @@ export default function Register() {
                         type="submit"
                         disabled={loading}
                         className={`w-full py-3 font-semibold rounded-lg text-white transition-all duration-300 ${loading
-                                ? "bg-purple-400 cursor-not-allowed"
-                                : "bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 hover:scale-[1.02]"
+                            ? "bg-purple-400 cursor-not-allowed"
+                            : "bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 hover:scale-[1.02]"
                             }`}
                     >
                         {loading ? "Registering..." : "Register"}
