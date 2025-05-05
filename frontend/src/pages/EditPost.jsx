@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { ImCross } from 'react-icons/im';
-import axios from "axios";
+import axiosInstance from "../utils/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { URL } from "../url";
 import { UserContext } from "../context/UserContext";
 import { ThemeContext } from '../context/ThemeContext';
-
 
 const EditPost = () => {
     const { darkMode } = useContext(ThemeContext);
@@ -28,48 +27,78 @@ const EditPost = () => {
 
     const fetchPost = async () => {
         try {
-            const res = await axios.get(`/api/posts/${postId}`, { withCredentials: true });
-            const post = res.data.data;
-            setTitle(post.title);
-            setDesc(post.description);
-            setPreviousPhoto(post.photo);
-            setCats(post.categories);
+            const res = await axiosInstance.get(`/api/posts/${postId}`);
+            if (res.data?.success) {
+                const post = res.data.data;
+                setTitle(post.title);
+                setDesc(post.description);
+                setPreviousPhoto(post.photo);
+                setCats(post.categories);
+            } else {
+                setError("Failed to load post");
+            }
         } catch (err) {
-            setError("Failed to load post");
+            console.error("Error fetching post:", err);
+            setError(err.response?.data?.message || "Failed to load post");
         }
     };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
-        if (loading) return; // <- prevent multiple clicks
+        if (loading) return;
         setLoading(true);
+        setError("");
 
         let imageUrl = previousPhoto;
 
-        if (file) {
-            const formData = new FormData();
-            formData.append("photo", file);
-            const uploadRes = await axios.patch(`/api/posts/${postId}/profile-picture`, formData, { withCredentials: true });
-            if (uploadRes.data.success) imageUrl = uploadRes.data.data.photo;
-        }
-
         try {
-            const postData = { title, description: desc, username: user.username, userId: user._id, categories: cats, photo: imageUrl };
-            const res = await axios.put(`/api/posts/${postId}`, postData, { withCredentials: true });
-            if (res.data.success) navigate(`/post/${res.data.data.slug}`);
+            if (file) {
+                const formData = new FormData();
+                formData.append("photo", file);
+                const uploadRes = await axiosInstance.patch(`/api/posts/${postId}/profile-picture`, formData);
+                if (uploadRes.data?.success) {
+                    imageUrl = uploadRes.data.data.photo;
+                }
+            }
+
+            const postData = {
+                title,
+                description: desc,
+                username: user.username,
+                userId: user._id,
+                categories: cats,
+                photo: imageUrl
+            };
+
+            const res = await axiosInstance.put(`/api/posts/${postId}`, postData);
+            if (res.data?.success) {
+                navigate(`/post/${res.data.data.slug}`);
+            } else {
+                setError("Failed to update post");
+            }
         } catch (err) {
-            setError("Error updating post");
+            console.error("Error updating post:", err);
+            setError(err.response?.data?.message || "Failed to update post");
         } finally {
             setLoading(false);
         }
     };
 
-    const deleteCategory = (i) => setCats(cats.filter((_, idx) => idx !== i));
+    const deleteCategory = (i) => {
+        setCats(cats.filter((_, idx) => idx !== i));
+    };
 
     const addCategory = () => {
         const newCat = cat.trim().toLowerCase();
-        if (newCat && !cats.includes(newCat)) setCats([...cats, newCat]);
+        if (newCat && !cats.includes(newCat)) {
+            setCats([...cats, newCat]);
+        }
         setCat("");
+    };
+
+    const getImageUrl = (photo) => {
+        if (!photo) return null;
+        return `${URL}/uploads/posts/${photo}`;
     };
 
     return (
@@ -105,9 +134,13 @@ const EditPost = () => {
                             <div className="flex items-center gap-4">
                                 {(previousPhoto || file) && (
                                     <img
-                                        src={file ? window.URL.createObjectURL(file) : `/uploads/posts/${previousPhoto}`}
+                                        src={file ? window.URL.createObjectURL(file) : getImageUrl(previousPhoto)}
                                         alt="Preview"
                                         className="w-36 h-36 object-cover rounded-lg shadow-md"
+                                        onError={(e) => {
+                                            console.error("Error loading image:", previousPhoto);
+                                            e.target.src = "https://via.placeholder.com/400x300?text=Image+not+available";
+                                        }}
                                     />
                                 )}
                                 <label className="cursor-pointer flex-1 py-4 border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 text-center hover:bg-gray-700 dark:hover:bg-gray-700 transition">

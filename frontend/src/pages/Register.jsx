@@ -1,8 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-
-import { URL } from "../url";
+import axiosInstance from "../utils/axios";
 import { ThemeContext } from "../context/ThemeContext";
 import { motion } from "framer-motion";
 
@@ -22,16 +20,24 @@ export default function Register() {
         setLoading(true);
 
         try {
-            await axios.post(`/api/auth/register`, { username, email, password });
+            const response = await axiosInstance.post(`/api/auth/register`, { username, email, password });
 
-            // Clear form and redirect
-            setUsername("");
-            setEmail("");
-            setPassword("");
-            setError("");
-            navigate("/login");
+            if (response.data.success) {
+                // Clear form and redirect
+                setUsername("");
+                setEmail("");
+                setPassword("");
+                setError("");
+                navigate("/login");
+            }
         } catch (err) {
-            setError(err.response?.data?.message || "Registration failed. Please try again.");
+            if (err.response?.status === 409) {
+                setError("This email is already registered. Please use a different email or login.");
+            } else if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else {
+                setError("Registration failed. Please try again.");
+            }
         } finally {
             setLoading(false);
         }

@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams, Navigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../utils/axios";
 import { motion } from "framer-motion";
 import { FaCamera } from "react-icons/fa";
 
 import ProfilePosts from "../components/ProfilePosts";
-import { URL } from "../url";
 import { UserContext } from "../context/UserContext";
 import { ThemeContext } from '../context/ThemeContext';
 
@@ -40,7 +39,7 @@ function Profile() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get(`/api/auth/refetch`, {
+                const res = await axiosInstance.get("/api/auth/refetch", {
                     withCredentials: true,
                 });
                 if (res.data.success) {
@@ -63,10 +62,7 @@ function Profile() {
         setPosts([]); // Reset posts when fetching new profile
 
         try {
-            const res = await axios.get(`/api/users/username/${param}`, {
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
-            });
+            const res = await axiosInstance.get(`/api/users/username/${param}`);
 
             if (!res.data.success) {
                 setError("Failed to fetch profile");
@@ -108,9 +104,7 @@ function Profile() {
 
         try {
             console.log("Fetching posts for user:", uid);
-            const res = await axios.get(`/api/posts/user/${uid}`, {
-                withCredentials: true,
-            });
+            const res = await axiosInstance.get(`/api/posts/user/${uid}`);
 
             console.log("Posts response:", res.data);
 
@@ -152,24 +146,21 @@ function Profile() {
                 updateData.password = password;
             }
 
-            // Step A: Update user’s own data
-            const res = await axios.patch(
+            // Step A: Update user's own data
+            const res = await axiosInstance.patch(
                 `/api/users/${user._id}`,
-                updateData,
-                { withCredentials: true }
+                updateData
             );
 
             if (res.data.success) {
                 // Step B: After user is updated, also update all existing posts:
                 try {
-                    await axios.patch(
+                    await axiosInstance.patch(
                         `/api/posts/updateUsername/${user._id}`,
-                        { newUsername: lowercaseUsername },
-                        { withCredentials: true }
+                        { newUsername: lowercaseUsername }
                     );
                 } catch (postErr) {
                     console.error("Error updating posts username:", postErr);
-                    // It’s optional to show an error about the post updates failing
                 }
 
                 // Step C: Locally reflect that the user changed username
@@ -192,7 +183,7 @@ function Profile() {
 
     const handleUserDelete = async () => {
         try {
-            await axios.delete(`/api/users/${user._id}`, { withCredentials: true });
+            await axiosInstance.delete(`/api/users/${user._id}`);
             setUser(null);
             navigate("/");
         } catch (err) {
@@ -210,11 +201,10 @@ function Profile() {
         try {
             const formData = new FormData();
             formData.append("photo", file);
-            const res = await axios.patch(
+            const res = await axiosInstance.patch(
                 `/api/users/${user._id}/profile-picture`,
                 formData,
                 {
-                    withCredentials: true,
                     headers: { "Content-Type": "multipart/form-data" },
                 }
             );

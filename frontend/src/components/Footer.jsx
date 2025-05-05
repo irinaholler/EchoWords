@@ -12,16 +12,16 @@ const Footer = () => {
                     <h3 className="text-xl font-bold mb-4">Quick Links</h3>
                     <ul>
                         <li>
-                            <Link to="/about" className="text-gray-400 hover:text-blue-400">About Us</Link>
+                            <Link to="/about" className="text-gray-400 hover:text-purple-400">About Us</Link>
                         </li>
                         <li>
-                            <Link to="/contact" className="text-gray-400 hover:text-blue-400">Contact</Link>
+                            <Link to="/contact" className="text-gray-400 hover:text-purple-400">Contact</Link>
                         </li>
                         <li>
-                            <Link to="/privacy-policy" className="text-gray-400 hover:text-blue-400">Privacy Policy</Link>
+                            <Link to="/privacy-policy" className="text-gray-400 hover:text-purple-400">Privacy Policy</Link>
                         </li>
                         <li>
-                            <Link to="/terms-of-service" className="text-gray-400 hover:text-blue-400">Terms of Service</Link>
+                            <Link to="/terms-of-service" className="text-gray-400 hover:text-purple-400">Terms of Service</Link>
                         </li>
                     </ul>
                 </div>
@@ -33,7 +33,7 @@ const Footer = () => {
                         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600">
                             <Facebook size={24} />
                         </a>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-500">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-500">
                             <Instagram size={24} />
                         </a>
                     </div>
@@ -43,8 +43,8 @@ const Footer = () => {
                 <div>
                     <h3 className="text-xl font-bold mb-4">Contact Us</h3>
                     <ul>
-                        <li className="text-gray-400">Email: <span className="text-white">contact@blog.com</span></li>
-                        <li className="text-gray-400">Phone: <span className="text-white">+123 456 789</span></li>
+                        <li className="text-gray-400">Email: <span className="text-white">contact@connectify.com</span></li>
+                        <li className="text-gray-400">Phone: <span className="text-white">+49 456 67 789</span></li>
                     </ul>
                 </div>
 

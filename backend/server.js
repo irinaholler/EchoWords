@@ -39,7 +39,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
-app.use("/api/posts", checkToken, postRouter);
+app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
 
 // Serve Frontend (for Render deployment)

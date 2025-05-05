@@ -1,16 +1,15 @@
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axios";
 import slugify from "slugify";
 import { BiEdit } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
+import { URL } from "../url";
 
 import { UserContext } from "../context/UserContext";
 import Comment from "../components/Comment";
 import Loader from "../components/Loader";
-import { URL } from "../url";
 import { ThemeContext } from '../context/ThemeContext';
-
 
 const PostDetails = () => {
     const { slug } = useParams();
@@ -37,18 +36,14 @@ const PostDetails = () => {
 
         try {
             console.log("Fetching post with slug:", slug);
-            const res = await axios.get(`/api/posts/slug/${slug}`, {
-                withCredentials: true,
-            });
+            const res = await axiosInstance.get(`/api/posts/slug/${slug}`);
 
             if (res.data?.success) {
                 const fetchedPost = res.data.data;
 
                 // Optionally fetch the author's current username
                 try {
-                    const userRes = await axios.get(`/api/users/${fetchedPost.userId}`, {
-                        withCredentials: true,
-                    });
+                    const userRes = await axiosInstance.get(`/api/users/${fetchedPost.userId}`);
                     if (userRes.data?.success) {
                         fetchedPost.username = userRes.data.data.username;
                     }
@@ -63,10 +58,9 @@ const PostDetails = () => {
                         strict: true,
                         remove: /[*+~.()'"!:@]/g,
                     });
-                    await axios.put(
+                    await axiosInstance.put(
                         `/api/posts/${fetchedPost._id}`,
-                        { ...fetchedPost, slug: newSlug },
-                        { withCredentials: true }
+                        { ...fetchedPost, slug: newSlug }
                     );
 
                     navigate(`/post/${newSlug}`); // optional redirection
@@ -97,16 +91,12 @@ const PostDetails = () => {
     const fetchPostComments = async (postId) => {
         if (!postId) return;
         try {
-            const res = await axios.get(`/api/comments/post/${postId}`, {
-                withCredentials: true,
-            });
+            const res = await axiosInstance.get(`/api/comments/post/${postId}`);
             if (Array.isArray(res.data) && res.data.length > 0) {
                 const commentsWithUsernames = await Promise.all(
                     res.data.map(async (commentObj) => {
                         try {
-                            const userRes = await axios.get(`/api/users/${commentObj.userId}`, {
-                                withCredentials: true,
-                            });
+                            const userRes = await axiosInstance.get(`/api/users/${commentObj.userId}`);
                             if (userRes.data?.success) {
                                 return { ...commentObj, author: userRes.data.data.username };
                             }
@@ -134,9 +124,7 @@ const PostDetails = () => {
             return;
         }
         try {
-            await axios.delete(`/api/posts/${post._id}`, {
-                withCredentials: true,
-            });
+            await axiosInstance.delete(`/api/posts/${post._id}`);
             navigate("/");
         } catch (err) {
             console.error("Error deleting post:", err);
@@ -154,15 +142,14 @@ const PostDetails = () => {
         if (!comment.trim()) return;
 
         try {
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `/api/comments/create`,
                 {
                     comment,
                     author: user.username,
                     postId: post._id,
                     userId: user._id,
-                },
-                { withCredentials: true }
+                }
             );
             if (response.data.success) {
                 setComment("");
@@ -177,7 +164,7 @@ const PostDetails = () => {
     // ---- Helper for Post Image ----
     const getImageUrl = (photo) => {
         if (!photo) return null;
-        return `/uploads/posts/${photo}`;
+        return `${URL}/uploads/posts/${photo}`;
     };
 
     // ---- useEffect to fetch post if slug changes ----

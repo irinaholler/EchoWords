@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import axiosInstance from '../utils/axios';
 import { URL } from '../url';
 import { ThemeContext } from '../context/ThemeContext';
 
@@ -8,7 +9,7 @@ const HomePosts = ({ post }) => {
 
     const getImageUrl = (photo) => {
         if (!photo) return null;
-        return `/${photo.startsWith("uploads") ? photo : "uploads/" + photo}`;
+        return `${URL}/uploads/posts/${photo}`;
     };
 
     if (!post || !post.slug) {
@@ -27,6 +28,20 @@ const HomePosts = ({ post }) => {
                 <h2 className="text-2xl font-bold line-clamp-2">
                     {post.title}
                 </h2>
+
+                {post.photo && (
+                    <div className="w-full h-48 overflow-hidden rounded-lg">
+                        <img
+                            src={getImageUrl(post.photo)}
+                            alt={post.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                                console.error("Error loading image:", post.photo);
+                                e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
+                            }}
+                        />
+                    </div>
+                )}
 
                 <p className="text-base line-clamp-3">
                     {post.description}

@@ -1,6 +1,6 @@
 import { ImCross } from 'react-icons/im';
 import { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Upload, Plus } from 'lucide-react';
@@ -29,7 +29,7 @@ const CreatePost = () => {
         const checkAuth = async () => {
             try {
                 if (!user) {
-                    const res = await axios.get(`/api/auth/refetch`, { withCredentials: true });
+                    const res = await axiosInstance.get("/api/auth/refetch");
                     if (res.data?.success) {
                         setUser(res.data.data);
                         setIsAuthenticated(true);
@@ -109,8 +109,7 @@ const CreatePost = () => {
             formData.append("photo", file);
             formData.append("categories", JSON.stringify(cats));
 
-            const res = await axios.post(`/api/posts/create`, formData, {
-                withCredentials: true,
+            const res = await axiosInstance.post(`/api/posts/create`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
@@ -200,61 +199,59 @@ const CreatePost = () => {
                                             placeholder="Add a category"
                                             className={`flex-1 px-4 py-3 rounded-lg border ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200 text-gray-900"} outline-none focus:ring-2 focus:ring-purple-500`}
                                         />
-                                        <motion.button
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
+                                        <button
                                             type="button"
                                             onClick={addCategory}
-                                            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg flex items-center space-x-2"
+                                            className={`px-4 py-3 rounded-lg ${darkMode ? "bg-purple-600 hover:bg-purple-700" : "bg-purple-500 hover:bg-purple-600"} text-white transition-colors`}
                                         >
-                                            <Plus size={20} />
-                                            <span>Add</span>
-                                        </motion.button>
+                                            <Plus className="w-5 h-5" />
+                                        </button>
                                     </div>
-                                    <div className="flex flex-wrap gap-2 mt-3">
-                                        {cats.map((c, i) => (
-                                            <motion.div
-                                                key={i}
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                className={`flex items-center space-x-2 px-3 py-1 rounded-full ${darkMode ? "bg-purple-900/50 text-purple-200" : "bg-purple-100 text-purple-800"}`}
+                                    <div className="flex flex-wrap gap-2">
+                                        {cats.map((category, index) => (
+                                            <div
+                                                key={index}
+                                                className={`flex items-center gap-2 px-3 py-1 rounded-full ${darkMode ? "bg-gray-700" : "bg-purple-100"} text-sm`}
                                             >
-                                                <span>{c}</span>
-                                                <button type="button" onClick={() => deleteCategory(i)}>
-                                                    <ImCross size={12} />
+                                                <span className={darkMode ? "text-gray-300" : "text-purple-700"}>{category}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => deleteCategory(index)}
+                                                    className={`p-1 rounded-full ${darkMode ? "hover:bg-gray-600" : "hover:bg-purple-200"}`}
+                                                >
+                                                    <ImCross className={`w-3 h-3 ${darkMode ? "text-gray-400" : "text-purple-500"}`} />
                                                 </button>
-                                            </motion.div>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
 
                                 {/* Description */}
                                 <div className="space-y-2">
-                                    <label className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Story Content</label>
+                                    <label className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Content</label>
                                     <textarea
                                         value={desc}
                                         onChange={(e) => setDesc(e.target.value)}
-                                        rows={12}
-                                        placeholder="Share your story..."
-                                        className={`w-full px-4 py-3 rounded-lg border resize-none ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200 text-gray-900"} outline-none focus:ring-2 focus:ring-purple-500`}
+                                        placeholder="Write your story..."
+                                        rows={10}
+                                        className={`w-full px-4 py-3 rounded-lg border ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-200 text-gray-900"} outline-none focus:ring-2 focus:ring-purple-500 resize-none`}
                                     />
                                 </div>
 
-                                {/* Submit */}
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
+                                {/* Submit Button */}
+                                <button
+                                    type="submit"
                                     onClick={handleCreate}
                                     disabled={loading}
-                                    className={`w-full md:w-[200px] mx-auto py-4 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                    className={`w-full py-3 rounded-lg text-white font-medium transition-colors ${loading
+                                        ? "bg-gray-400 cursor-not-allowed"
+                                        : darkMode
+                                            ? "bg-purple-600 hover:bg-purple-700"
+                                            : "bg-purple-500 hover:bg-purple-600"
+                                        }`}
                                 >
-                                    {loading ? (
-                                        <div className="flex items-center justify-center space-x-2">
-                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                            <span>Creating...</span>
-                                        </div>
-                                    ) : "Publish Story"}
-                                </motion.button>
+                                    {loading ? "Creating..." : "Create Post"}
+                                </button>
                             </form>
                         </div>
                     </motion.div>

@@ -8,7 +8,7 @@ import axios from 'axios';
 
 import { UserContext } from '../context/UserContext';
 import { FiSearch } from 'react-icons/fi';
-import { URL } from '../url';
+import { URL } from '../url.js';
 import logo from "../assets/logo.png";
 import { ThemeContext } from '../context/ThemeContext';
 

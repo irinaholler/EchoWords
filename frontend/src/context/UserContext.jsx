@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import axios from "axios";
-import { URL } from "../url";
+import axiosInstance from "../utils/axios";
 
 export const UserContext = createContext({});
 
@@ -11,16 +10,17 @@ export function UserContextProvider({ children }) {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get(`/api/auth/refetch`, {
-                    withCredentials: true,
-                });
+                const res = await axiosInstance.get(`/api/auth/refetch`);
                 if (res.data.success) {
                     setUser(res.data.data);
                 } else {
                     setUser(null);
                 }
             } catch (err) {
-                console.log("Error fetching user:", err.response?.data?.message || err.message);
+                // Don't log error if it's just an unauthorized request (no token)
+                if (err.response?.status !== 401) {
+                    console.log("Error fetching user:", err.response?.data?.message || err.message);
+                }
                 setUser(null);
             } finally {
                 setLoading(false);
@@ -36,7 +36,7 @@ export function UserContextProvider({ children }) {
 
     const logout = async () => {
         try {
-            await axios.get(`/api/auth/logout`, { withCredentials: true });
+            await axiosInstance.get(`/api/auth/logout`);
             setUser(null);
         } catch (err) {
             console.error("Logout failed:", err.response?.data || err.message);

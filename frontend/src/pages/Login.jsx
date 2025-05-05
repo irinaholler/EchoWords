@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { URL } from "../url";
+import axiosInstance from "../utils/axios";
 import { UserContext } from "../context/UserContext";
 import { ThemeContext } from "../context/ThemeContext";
 import { motion } from "framer-motion";
@@ -22,9 +21,8 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = await axios.post(`/api/auth/login`,
-                { email, password },
-                { withCredentials: true }
+            const response = await axiosInstance.post(`/api/auth/login`,
+                { email, password }
             );
 
             if (response.data.success) {
@@ -111,7 +109,7 @@ export default function LoginPage() {
                 </form>
 
                 <div className="text-center mt-6 text-sm">
-                    Don’t have an account?
+                    Don't have an account?
                     <Link to="/register" className="text-purple-600 font-semibold pl-1 hover:underline">
                         Register
                     </Link>

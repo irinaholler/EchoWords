@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import { ImCross } from 'react-icons/im';
-import axios from "axios";
+import axiosInstance from "../utils/axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeContext } from '../context/ThemeContext';
-import { URL } from "../url";
+import { URL } from '../url';
 
 const ProfilePosts = ({ p }) => {
     const { darkMode } = useContext(ThemeContext);
@@ -12,7 +12,7 @@ const ProfilePosts = ({ p }) => {
 
     const getImageUrl = (photo) => {
         if (!photo) return null;
-        return `/uploads/posts/${photo}`;
+        return `${URL}/uploads/posts/${photo}`;
     };
 
     if (!p || !p.slug) {
@@ -38,7 +38,10 @@ const ProfilePosts = ({ p }) => {
                             src={photoUrl}
                             alt={title}
                             className="h-full w-full object-cover"
-                            onError={() => setImageError(true)}
+                            onError={() => {
+                                console.error("Error loading image:", photoUrl);
+                                setImageError(true);
+                            }}
                         />
                     ) : (
                         <div className={`h-full w-full flex items-center justify-center rounded-lg
@@ -99,48 +102,70 @@ const ProfilePosts = ({ p }) => {
                         exit={{ opacity: 0 }}
                     >
                         <motion.div
-                            className={`p-6 rounded-lg shadow-lg relative max-w-lg w-full 
-                                ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}
-                            initial={{ scale: 0.8 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0.8 }}
+                            className={`w-full max-w-4xl mx-4 rounded-xl overflow-hidden ${darkMode ? "bg-gray-900" : "bg-white"}`}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
                         >
-                            <button
-                                onClick={() => setModalOpen(false)}
-                                className={`absolute top-2 right-2 text-xl font-bold
-                                    ${darkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-black"}`}
-                            >
-                                <ImCross />
-                            </button>
-                            <h2 className="text-2xl font-bold mb-4">{title}</h2>
-
-                            {photoUrl && (
-                                <img
-                                    src={photoUrl}
-                                    alt={title}
-                                    className="w-full h-auto rounded mb-4"
-                                    onError={() => setImageError(true)}
-                                />
-                            )}
-
-                            <p className={`text-base ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
-                                {description}
-                            </p>
-
-                            {/* Modal Categories */}
-                            {p.categories?.length > 0 && (
-                                <div className="flex gap-2 flex-wrap mt-4">
-                                    {p.categories.map((category, index) => (
-                                        <span
-                                            key={index}
-                                            className={`text-sm px-3 py-1 rounded-full font-medium
-                                                ${darkMode ? "bg-purple-900 text-purple-200" : "bg-purple-100 text-purple-700"}`}
-                                        >
-                                            #{category}
-                                        </span>
-                                    ))}
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-6">
+                                    <h2 className="text-2xl font-bold">{title}</h2>
+                                    <button
+                                        onClick={() => setModalOpen(false)}
+                                        className={`p-2 rounded-full transition-colors duration-200
+                                            ${darkMode
+                                                ? "text-gray-300 hover:text-white hover:bg-gray-800"
+                                                : "text-gray-600 hover:text-black hover:bg-gray-100"}`}
+                                    >
+                                        <ImCross className="w-5 h-5" />
+                                    </button>
                                 </div>
-                            )}
+
+                                <div className="mb-6">
+                                    {photoUrl && !imageError ? (
+                                        <img
+                                            src={photoUrl}
+                                            alt={title}
+                                            className="w-full h-64 object-cover rounded-lg"
+                                            onError={() => {
+                                                console.error("Error loading image:", photoUrl);
+                                                setImageError(true);
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className={`w-full h-64 flex items-center justify-center rounded-lg
+                                            ${darkMode ? "bg-gray-700 text-gray-400" : "bg-gray-200 text-gray-500"}`}>
+                                            No Image
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex justify-between text-sm font-semibold mb-4">
+                                    <p className="text-purple-400">@{username}</p>
+                                    <div className={`flex gap-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                                        <p>{updatedAt.toDateString()}</p>
+                                        <p>{updatedAt.toTimeString().slice(0, 8)}</p>
+                                    </div>
+                                </div>
+
+                                <p className={`text-base ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                                    {description}
+                                </p>
+
+                                {p.categories?.length > 0 && (
+                                    <div className="flex gap-2 flex-wrap mt-4">
+                                        {p.categories.map((category, index) => (
+                                            <span
+                                                key={index}
+                                                className={`text-sm px-3 py-1 rounded-full font-medium
+                                                    ${darkMode ? "bg-purple-900 text-purple-200" : "bg-purple-100 text-purple-700"}`}
+                                            >
+                                                #{category}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

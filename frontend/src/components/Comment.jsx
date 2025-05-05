@@ -3,7 +3,7 @@ import { UserContext } from '../context/UserContext';
 import { MdDelete } from 'react-icons/md';
 import { BiEdit } from 'react-icons/bi';
 import axios from 'axios';
-import { URL } from '../url';
+import { URL } from '../url.js';
 import { ThemeContext } from '../context/ThemeContext';
 
 const Comment = ({ c }) => {
